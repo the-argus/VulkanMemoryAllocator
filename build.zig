@@ -12,9 +12,10 @@ pub fn build(b: *std.Build) void {
 
     lib.addIncludePath(.{ .path = "include" });
     lib.addCSourceFiles(&.{
-        "src/empty.c",
+        "src/VmaUsage.cpp",
     }, &.{});
     lib.linkLibC();
+    lib.linkLibCpp();
     lib.linkSystemLibrary("vulkan");
 
     lib.installHeader("include/vk_mem_alloc.h", "vk_mem_alloc.h");
