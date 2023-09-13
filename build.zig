@@ -1,5 +1,22 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
-    b.installFile("include/vk_mem_alloc.h", "include/vk_mem_alloc.h");
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+
+    const lib = b.addStaticLibrary(.{
+        .name = "VulkanMemoryAllocator",
+        .target = target,
+        .optimize = optimize,
+    });
+
+    lib.addIncludePath(.{ .path = "include" });
+    lib.addCSourceFiles(&.{
+        "src/empty.c",
+    }, &.{});
+    lib.linkLibC();
+    lib.linkSystemLibrary("vulkan");
+
+    lib.installHeader("include/vk_mem_alloc.h", "vk_mem_alloc.h");
+    b.installArtifact(lib);
 }
