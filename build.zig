@@ -33,15 +33,16 @@ pub fn buildHeaders(b: *std.Build) []*std.Build.Step.InstallFile {
     return installs.toOwnedSlice() catch @panic("OOM");
 }
 
-/// Build function which by default is only header-only
+/// Build function which by default installs both headers and the static lib
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    _ = target;
-    _ = optimize;
     for (buildHeaders(b)) |*install_file| {
         b.getInstallStep().dependOn(&install_file.*.step);
     }
+
+    const lib = buildLibrary(b, target, optimize);
+    b.installArtifact(lib);
 }
 
 /// Example of how you might use this library, either as header-only or with
@@ -58,10 +59,6 @@ fn exampleUsage(b: *std.Build) void {
     const submodules = false;
     var vma: ?*std.Build.Dependency = null;
 
-    // UNCOMMENT THE NEXT TWO LINES IF YOU WANT TO USE THE STATIC LIB
-    // const target = b.standardTargetOptions(.{});
-    // const optimize = b.standardOptimizeOption(.{});
-
     if (submodules) {
         // import VMA with submodules, assuming you have it in a submodule right
         // next to your build.zig, and the submodule is called VulkanMemoryAllocator
@@ -72,9 +69,8 @@ fn exampleUsage(b: *std.Build) void {
     } else {
         // OR with build.zig.zon, assuming you called it vulkan_memory_allocator
         vma = b.dependency("vulkan_memory_allocator", .{});
-        // UNCOMMENT THE NEXT THREE LINES IF YOU WANT TO INSTALL THE STATIC LIB
-        // const vma_build_zig = @import("vulkan_memory_allocator");
-        // var vma_lib = vma_build_zig.buildLibrary(b, target, optimize);
+        // UNCOMMENT THE NEXT TWO LINES IF YOU WANT TO USE THE STATIC LIB
+        // var vma_lib = vma.?.artifact("VulkanMemoryAllocator");
         // exe.linkLibrary(vma_lib);
     }
     // add the VMA installation step to our build graph, so building the exe
