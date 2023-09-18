@@ -35,6 +35,10 @@ pub fn buildHeaders(b: *std.Build) []*std.Build.Step.InstallFile {
 
 /// Build function which by default is only header-only
 pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+    _ = target;
+    _ = optimize;
     for (buildHeaders(b)) |*install_file| {
         b.getInstallStep().dependOn(&install_file.*.step);
     }
