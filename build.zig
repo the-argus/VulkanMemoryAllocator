@@ -54,6 +54,10 @@ fn exampleUsage(b: *std.Build) void {
     const submodules = false;
     var vma: ?*std.Build.Dependency = null;
 
+    // UNCOMMENT THE NEXT TWO LINES IF YOU WANT TO USE THE STATIC LIB
+    // const target = b.standardTargetOptions(.{});
+    // const optimize = b.standardOptimizeOption(.{});
+
     if (submodules) {
         // import VMA with submodules, assuming you have it in a submodule right
         // next to your build.zig, and the submodule is called VulkanMemoryAllocator
@@ -66,7 +70,7 @@ fn exampleUsage(b: *std.Build) void {
         vma = b.dependency("vulkan_memory_allocator", .{});
         // UNCOMMENT THE NEXT THREE LINES IF YOU WANT TO INSTALL THE STATIC LIB
         // const vma_build_zig = @import("vulkan_memory_allocator");
-        // var vma_lib = vma_build_zig.buildLibrary();
+        // var vma_lib = vma_build_zig.buildLibrary(b, target, optimize);
         // exe.linkLibrary(vma_lib);
     }
     // add the VMA installation step to our build graph, so building the exe
